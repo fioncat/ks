@@ -25,6 +25,23 @@ build:
 install:
 	@CGO_ENABLED=0 go install -ldflags="-X 'main.Version=$(VERSION)' -X 'main.Commit=$(COMMIT_ID)' -X 'main.BuildDate=$(DATE)'" ./kser
 
+.PHONY: install-check
+install-check:
+	@go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+	@go install github.com/client9/misspell/cmd/misspell@latest
+	@go install github.com/gordonklaus/ineffassign@latest
+
+.PHONY: check
+check:
+	@echo "==> check ineffassign"
+	@ineffassign ./...
+	@echo "==> check spell"
+	@find . -type f -name '*.go' | xargs misspell -error
+	@echo "==> check gocyclo"
+	@gocyclo -over 15 .
+	@echo "==> go vet"
+	@go vet ./...
+
 .PHONY: clean
 clean:
 	@rm -rf bin
