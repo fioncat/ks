@@ -14,6 +14,8 @@ func newNsCmd() *cobra.Command {
 		Short: "Switch to a namespace",
 
 		Args: cobra.RangeArgs(0, 1),
+
+		ValidArgsFunction: cmdhelper.CompleteNamespace,
 	}
 
 	cmdentry.Setup(cmd, RunNs)

@@ -92,7 +92,7 @@ func (m *KubeManager) Delete(name string) error {
 		return fmt.Errorf("kubeconfig %q not found", name)
 	}
 
-	err := remove(m.meta, ctx.ConfigPath)
+	err := remove(m.meta, ctx.ConfigName)
 	if err != nil {
 		return fmt.Errorf("remove kubeconfig %q: %w", name, err)
 	}

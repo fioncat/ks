@@ -1,4 +1,4 @@
-package use
+package clear
 
 import (
 	"github.com/fioncat/ks/pkg/cmdentry"
@@ -10,12 +10,10 @@ import (
 
 func newConfigCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "config [NAME]",
-		Short: "Switch to a kubeconfig",
+		Use:   "config",
+		Short: "Clear the current kubeconfig",
 
-		Args: cobra.RangeArgs(0, 1),
-
-		ValidArgsFunction: cmdhelper.CompleteConfig(true),
+		Args: cobra.NoArgs,
 	}
 
 	cmdentry.Setup(cmd, runConfig)
@@ -23,10 +21,6 @@ func newConfigCmd() *cobra.Command {
 }
 
 func runConfig(meta *metadata.Metadata, manager *kubectx.KubeManager, args []string) error {
-	ctx, err := cmdhelper.SelectContext(meta, manager, args, true, true)
-	if err != nil {
-		return err
-	}
-
-	return cmdhelper.PrintUseConfig(meta, ctx)
+	cmdhelper.PrintClearConfig()
+	return nil
 }

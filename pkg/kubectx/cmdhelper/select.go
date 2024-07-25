@@ -18,16 +18,19 @@ const (
 	kubeClientTimeout = time.Second * 10
 )
 
-func SelectContext(meta *metadata.Metadata, manager *kubectx.KubeManager, args []string, require bool) (*kubectx.KubeContext, error) {
+func SelectContext(meta *metadata.Metadata, manager *kubectx.KubeManager, args []string, require, skipCurrent bool) (*kubectx.KubeContext, error) {
 	if len(args) == 0 {
 		// TODO: We can sort the contexts by use frequency
 		ctxs := manager.List()
-		if len(ctxs) == 0 {
-			return nil, errors.New("no kubeconfig yet, please create one first")
-		}
 		items := make([]string, 0, len(ctxs))
 		for _, ctx := range ctxs {
+			if ctx.Current && skipCurrent {
+				continue
+			}
 			items = append(items, ctx.ConfigName)
+		}
+		if len(items) == 0 {
+			return nil, errors.New("no kubeconfig to switch")
 		}
 
 		idx, err := fzf.Search(items)
@@ -65,7 +68,7 @@ func SelectContext(meta *metadata.Metadata, manager *kubectx.KubeManager, args [
 	return ctx, nil
 }
 
-func ListNamespaces(ctx *kubectx.KubeContext) ([]string, error) {
+func ListNamespaces(ctx *kubectx.KubeContext, skip string) ([]string, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", ctx.ConfigPath)
 	if err != nil {
 		return nil, fmt.Errorf("load kubeconfig: %w", err)
@@ -85,6 +88,9 @@ func ListNamespaces(ctx *kubectx.KubeContext) ([]string, error) {
 
 	namespaces := make([]string, 0, len(nsList.Items))
 	for _, nsItem := range nsList.Items {
+		if nsItem.Name == skip {
+			continue
+		}
 		namespaces = append(namespaces, nsItem.Name)
 	}
 
@@ -104,12 +110,12 @@ func SelectNamespace(meta *metadata.Metadata, ctx *kubectx.KubeContext, args []s
 		return name, nil
 	}
 
-	namespaces, err := ListNamespaces(ctx)
+	namespaces, err := ListNamespaces(ctx, ctx.Namespace)
 	if err != nil {
 		return "", err
 	}
 	if len(namespaces) == 0 {
-		return "", errors.New("no namespace in the cluster to use")
+		return "", errors.New("no namespace to switch")
 	}
 
 	idx, err := fzf.Search(namespaces)

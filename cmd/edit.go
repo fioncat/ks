@@ -15,6 +15,8 @@ func newEditCmd() *cobra.Command {
 		Short: "Edit a kubeconfig file",
 
 		Args: cobra.RangeArgs(0, 1),
+
+		ValidArgsFunction: cmdhelper.CompleteConfig(false),
 	}
 
 	cmdentry.Setup(cmd, runEdit)
@@ -22,7 +24,7 @@ func newEditCmd() *cobra.Command {
 }
 
 func runEdit(meta *metadata.Metadata, manager *kubectx.KubeManager, args []string) error {
-	ctx, err := cmdhelper.SelectContext(meta, manager, args, false)
+	ctx, err := cmdhelper.SelectContext(meta, manager, args, false, false)
 	if err != nil {
 		return err
 	}

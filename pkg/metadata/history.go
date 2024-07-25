@@ -16,9 +16,9 @@ type History struct {
 }
 
 type HistoryRecord struct {
-	Timestamp int64  `yaml:"timestamp"`
-	Name      string `yaml:"name"`
-	Namespace string `yaml:"namespace"`
+	Timestamp int64  `yaml:"timestamp" json:"timestamp"`
+	Name      string `yaml:"name" json:"name"`
+	Namespace string `yaml:"namespace" json:"namespace"`
 
 	// TODO: Add more info?
 }

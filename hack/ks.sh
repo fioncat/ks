@@ -38,8 +38,9 @@ function ks() {
 		KUBECONFIG_PATH="${remainder%%,*}"; remainder="${remainder#*,}"
 
 		if [ -z "$KUBECONFIG_NAME" ]; then
-			export -n KS_CURRENT_KUBECONFIG_NAME
-			export -n KUBECONFIG
+			export KS_CURRENT_KUBECONFIG_NAME=""
+			export KS_CURRENT_NAMESPACE=""
+			export KUBECONFIG=""
 			alias k="kubectl"
 			printf "Cleared kubeconfig\n"
 			return
@@ -56,7 +57,7 @@ function ks() {
 	namespace="$RESPONSE"
 
 	if [ -z "$namespace" ]; then
-		export -n KS_CURRENT_NAMESPACE
+		export KS_CURRENT_NAMESPACE=""
 		alias k="kubectl"
 		printf "Cleared namespace\n"
 		return

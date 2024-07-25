@@ -18,14 +18,14 @@ const (
 )
 
 type KubeContext struct {
-	ConfigName string
-	ConfigPath string
+	ConfigName string `json:"configName"`
+	ConfigPath string `json:"configPath"`
 
-	Namespace string
+	Namespace string `json:"namespace"`
 
-	Alias string
+	Alias string `json:"alias"`
 
-	Current bool
+	Current bool `json:"current"`
 
 	config       *clientcmdapi.Config
 	configAccess clientcmd.ConfigAccess
