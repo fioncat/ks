@@ -19,7 +19,11 @@ fmt:
 
 .PHONY: build
 build:
-	@CGO_ENABLED=0 go build -ldflags="-X 'main.Version=$(VERSION)' -X 'main.Commit=$(COMMIT_ID)' -X 'main.BuildDate=$(DATE)'" -o bin/kser
+	@CGO_ENABLED=0 go build -ldflags="-X 'main.Version=$(VERSION)' -X 'main.Commit=$(COMMIT_ID)' -X 'main.BuildDate=$(DATE)'" -o bin/kser ./kser
+
+.PHONY: install
+install:
+	@CGO_ENABLED=0 go install -ldflags="-X 'main.Version=$(VERSION)' -X 'main.Commit=$(COMMIT_ID)' -X 'main.BuildDate=$(DATE)'" ./kser
 
 .PHONY: clean
 clean:

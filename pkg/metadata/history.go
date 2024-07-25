@@ -65,6 +65,9 @@ func (h *History) GetLastKubeConfig(current string) *string {
 
 func (h *History) GetLastNamespace(name, currentNamespace string) *string {
 	for _, record := range h.Records {
+		if record.Namespace == "" {
+			continue
+		}
 		if record.Name == name && record.Namespace != currentNamespace {
 			return &record.Namespace
 		}

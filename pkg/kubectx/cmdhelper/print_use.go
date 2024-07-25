@@ -18,18 +18,27 @@ func PrintUseConfig(meta *metadata.Metadata, ctx *kubectx.KubeContext) error {
 		ctx.ConfigName,
 		ctx.ConfigPath,
 	}
-	fmt.Printf("%s%s\n", ConfigHackPrefix, strings.Join(fields, ","))
 
 	meta.History.Add(ctx.ConfigName, "")
-	return meta.History.Save()
+	err := meta.History.Save()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%s%s\n", ConfigHackPrefix, strings.Join(fields, ","))
+	return nil
 }
 
 func PrintUseNamespace(meta *metadata.Metadata, ctx *kubectx.KubeContext, ns string) error {
-	fmt.Printf("%s%s\n", NamespaceHackPrefix, ns)
-
 	ctx.Namespace = ns
 	meta.History.Add(ctx.ConfigName, ns)
-	return meta.History.Save()
+	err := meta.History.Save()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%s%s\n", NamespaceHackPrefix, ns)
+	return nil
 }
 
 func PrintClearConfig() {

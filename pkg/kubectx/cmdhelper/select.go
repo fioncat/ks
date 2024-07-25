@@ -125,3 +125,33 @@ func SelectNamespace(meta *metadata.Metadata, ctx *kubectx.KubeContext, args []s
 
 	return namespaces[idx], nil
 }
+
+func SelectGroupNamespace(meta *metadata.Metadata, args []string) (string, error) {
+	group := args[0]
+	namespaces, ok := meta.Config.Groups[group]
+	if !ok {
+		return "", fmt.Errorf("group %q not found in your config", group)
+	}
+
+	if len(namespaces) == 0 {
+		return "", fmt.Errorf("no namespace in group %q", group)
+	}
+
+	if len(args) > 1 {
+		targetNs := args[1]
+		for _, ns := range namespaces {
+			if ns == targetNs {
+				return ns, nil
+			}
+		}
+
+		return "", fmt.Errorf("namespace %q not found in group %q", targetNs, group)
+	}
+
+	idx, err := fzf.Search(namespaces)
+	if err != nil {
+		return "", err
+	}
+
+	return namespaces[idx], nil
+}

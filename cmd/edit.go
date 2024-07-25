@@ -16,7 +16,7 @@ func newEditCmd() *cobra.Command {
 
 		Args: cobra.RangeArgs(0, 1),
 
-		ValidArgsFunction: cmdhelper.CompleteConfig(false),
+		ValidArgsFunction: cmdhelper.CompleteConfig(false, false),
 	}
 
 	cmdentry.Setup(cmd, runEdit)
@@ -43,10 +43,10 @@ func runEdit(meta *metadata.Metadata, manager *kubectx.KubeManager, args []strin
 		return err
 	}
 
-	ctx, err = manager.Set(name, content)
+	_, err = manager.Set(name, content)
 	if err != nil {
 		return err
 	}
 
-	return cmdhelper.PrintUseConfig(meta, ctx)
+	return nil
 }

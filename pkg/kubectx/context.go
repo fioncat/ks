@@ -12,11 +12,6 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-const (
-	CurrentKubeConfigNameEnv = "KS_CURRENT_KUBECONFIG_NAME"
-	CurrentNamespaceEnv      = "KS_CURRENT_NAMESPACE"
-)
-
 type KubeContext struct {
 	ConfigName string `json:"configName"`
 	ConfigPath string `json:"configPath"`
@@ -80,11 +75,6 @@ func read(meta *metadata.Metadata, path string) (*KubeContext, error) {
 		return nil, fmt.Errorf("[Internal] bad kubeconfig path %q, not in expected position", path)
 	}
 
-	currentName := os.Getenv(CurrentKubeConfigNameEnv)
-	current := currentName == name
-
-	currentNamespace := os.Getenv(CurrentNamespaceEnv)
-
 	err = utils.EnsureFile(path)
 	if err != nil {
 		return nil, err
@@ -100,14 +90,10 @@ func read(meta *metadata.Metadata, path string) (*KubeContext, error) {
 	}
 
 	var namespace string
-	if current && currentNamespace != "" {
-		namespace = currentNamespace
-	} else if config.CurrentContext != "" {
-		// Get namespace from kubeconfig context setting
-		ctx := config.Contexts[config.CurrentContext]
-		if ctx != nil {
-			namespace = ctx.Namespace
-		}
+	// Get namespace from kubeconfig context setting
+	ctx := config.Contexts[config.CurrentContext]
+	if ctx != nil {
+		namespace = ctx.Namespace
 	}
 
 	return &KubeContext{
@@ -115,7 +101,6 @@ func read(meta *metadata.Metadata, path string) (*KubeContext, error) {
 		ConfigPath:   path,
 		Namespace:    namespace,
 		Alias:        "",
-		Current:      current,
 		config:       config,
 		configAccess: configAccess,
 	}, nil

@@ -4,14 +4,22 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/fioncat/ks/pkg/kubectx"
 	"github.com/fioncat/ks/pkg/metadata"
 	"github.com/spf13/cobra"
 )
 
-func CompleteConfig(skipCurrent bool) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func CompleteConfig(skipCurrent, rename bool) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		if len(args) > 1 {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		}
+		if len(args) == 1 && !rename {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		}
+
 		manager := buildCompleteKubeManager(args, toComplete)
 		if manager == nil {
 			return nil, cobra.ShellCompDirectiveError
@@ -21,6 +29,10 @@ func CompleteConfig(skipCurrent bool) func(cmd *cobra.Command, args []string, to
 		if err != nil {
 			handleCompleteError(args, toComplete, err)
 			return nil, cobra.ShellCompDirectiveError
+		}
+
+		if rename && len(args) == 1 {
+			return items, cobra.ShellCompDirectiveNoSpace
 		}
 
 		return items, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +53,9 @@ func completeConfig(manager *kubectx.KubeManager, skipCurrent bool) ([]string, e
 }
 
 func CompleteNamespace(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
 	manager := buildCompleteKubeManager(args, toComplete)
 	if manager == nil {
 		return nil, cobra.ShellCompDirectiveError
@@ -52,6 +67,35 @@ func CompleteNamespace(cmd *cobra.Command, args []string, toComplete string) ([]
 		return nil, cobra.ShellCompDirectiveError
 	}
 
+	return items, cobra.ShellCompDirectiveNoFileComp
+}
+
+func CompleteGroupNamespace(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	meta, err := metadata.Load("")
+	if err != nil {
+		handleCompleteError(args, toComplete, err)
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if len(meta.Config.Groups) == 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	if len(args) == 0 {
+		groups := make([]string, 0, len(meta.Config.Groups))
+		for group := range meta.Config.Groups {
+			groups = append(groups, group)
+		}
+		sort.Strings(groups)
+		return groups, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	if len(args) != 1 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	group := args[0]
+	items := meta.Config.Groups[group]
 	return items, cobra.ShellCompDirectiveNoFileComp
 }
 

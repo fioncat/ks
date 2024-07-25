@@ -4,7 +4,7 @@ has_prefix() { case $2 in "$1"*) true;; *) false;; esac; }
 
 function ks() {
 	local EXECUTABLE_PATH=""
-	local DEFAULT_EXECUTABLE_PATH="./bin/kser"
+	local DEFAULT_EXECUTABLE_PATH="kser"
 	declare -a opts
 
 	while test $# -gt 0; do
@@ -18,9 +18,9 @@ function ks() {
 		EXECUTABLE_PATH="$DEFAULT_EXECUTABLE_PATH"
 	fi
 	RESPONSE="$($EXECUTABLE_PATH "${opts[@]}")"
-	if [ $? -ne 0 -o -z "$RESPONSE" ]; then
-		printf "%s" "$RESPONSE"
-		return $?
+	local EXIT_CODE=$?
+	if [ $EXIT_CODE -ne 0 -o -z "$RESPONSE" ]; then
+		return $EXIT_CODE
 	fi
 
 	kubeconfig_prefix="__config_"
@@ -47,6 +47,7 @@ function ks() {
 		fi
 
 		export KS_CURRENT_KUBECONFIG_NAME="$KUBECONFIG_NAME"
+		export KS_CURRENT_NAMESPACE=""
 		export KUBECONFIG="$KUBECONFIG_PATH"
 		alias k="kubectl"
 		printf "Switched to kubeconfig %s\n" "$KUBECONFIG_NAME"

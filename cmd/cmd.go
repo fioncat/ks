@@ -23,6 +23,7 @@ func NewCmd() *cobra.Command {
 	cmd.AddCommand(newEditCmd())
 	cmd.AddCommand(newDeleteCmd())
 	cmd.AddCommand(newShowCmd())
+	cmd.AddCommand(newRenameCmd())
 	cmd.AddCommand(use.NewCmd())
 	cmd.AddCommand(clear.NewCmd())
 	cmd.AddCommand(list.NewCmd())

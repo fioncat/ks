@@ -3,9 +3,16 @@ package kubectx
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 
 	"github.com/fioncat/ks/pkg/metadata"
+)
+
+const (
+	CurrentKubeConfigNameEnv = "KS_CURRENT_KUBECONFIG_NAME"
+	CurrentNamespaceEnv      = "KS_CURRENT_NAMESPACE"
 )
 
 type KubeManager struct {
@@ -45,6 +52,15 @@ func BuildKubeManager(meta *metadata.Metadata) (*KubeManager, error) {
 	sort.Slice(ctxs, func(i, j int) bool {
 		return ctxs[i].ConfigName < ctxs[j].ConfigName
 	})
+
+	currentName := os.Getenv(CurrentKubeConfigNameEnv)
+	currentNamespace := os.Getenv(CurrentNamespaceEnv)
+	for _, ctx := range ctxs {
+		ctx.Current = currentName == ctx.ConfigName
+		if ctx.Current && currentNamespace != "" {
+			ctx.Namespace = currentNamespace
+		}
+	}
 
 	return &KubeManager{
 		meta:  meta,
@@ -115,4 +131,17 @@ func (m *KubeManager) GetCurrent() (*KubeContext, error) {
 		}
 	}
 	return nil, errors.New("no current kubeconfig attached, please attach one first (`use` command)")
+}
+
+func (m *KubeManager) Rename(ctx *KubeContext, name string) error {
+	newPath := filepath.Join(m.meta.KubeConfigDir, name)
+	err := os.Rename(ctx.ConfigPath, newPath)
+	if err != nil {
+		return fmt.Errorf("rename kubeconfig file: %w", err)
+	}
+
+	ctx.ConfigName = name
+	ctx.ConfigPath = newPath
+
+	return nil
 }

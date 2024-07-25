@@ -17,7 +17,7 @@ func newDeleteCmd() *cobra.Command {
 
 		Args: cobra.RangeArgs(0, 1),
 
-		ValidArgsFunction: cmdhelper.CompleteConfig(false),
+		ValidArgsFunction: cmdhelper.CompleteConfig(false, false),
 	}
 
 	cmdentry.Setup(cmd, runDelete)

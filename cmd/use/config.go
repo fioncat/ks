@@ -15,7 +15,7 @@ func newConfigCmd() *cobra.Command {
 
 		Args: cobra.RangeArgs(0, 1),
 
-		ValidArgsFunction: cmdhelper.CompleteConfig(true),
+		ValidArgsFunction: cmdhelper.CompleteConfig(true, false),
 	}
 
 	cmdentry.Setup(cmd, runConfig)

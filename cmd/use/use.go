@@ -10,6 +10,7 @@ func NewCmd() *cobra.Command {
 
 	cmd.AddCommand(newConfigCmd())
 	cmd.AddCommand(newNsCmd())
+	cmd.AddCommand(newGroupCmd())
 
 	return cmd
 }

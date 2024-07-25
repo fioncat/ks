@@ -18,11 +18,11 @@ func newNsCmd() *cobra.Command {
 		ValidArgsFunction: cmdhelper.CompleteNamespace,
 	}
 
-	cmdentry.Setup(cmd, RunNs)
+	cmdentry.Setup(cmd, runNs)
 	return cmd
 }
 
-func RunNs(meta *metadata.Metadata, manager *kubectx.KubeManager, args []string) error {
+func runNs(meta *metadata.Metadata, manager *kubectx.KubeManager, args []string) error {
 	ctx, err := manager.GetCurrent()
 	if err != nil {
 		return err

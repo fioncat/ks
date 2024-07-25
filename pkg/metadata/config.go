@@ -83,5 +83,17 @@ func loadConfig(configPath string) (*Config, error) {
 	// Here we need to expand those environment variables.
 	cfg.MetadataDir = os.ExpandEnv(cfg.MetadataDir)
 
+	if cfg.MetadataDir == "" {
+		cfg.MetadataDir = filepath.Join(homedir.HomeDir(), recommandedMetadataDir)
+	}
+
+	if cfg.Groups == nil {
+		cfg.Groups = make(map[string][]string)
+	}
+
+	if cfg.Alias == nil {
+		cfg.Alias = make(map[string]string)
+	}
+
 	return &cfg, nil
 }
