@@ -25,6 +25,10 @@ build:
 install:
 	@CGO_ENABLED=0 go install -ldflags="-X 'main.Version=$(VERSION)' -X 'main.Commit=$(COMMIT_ID)' -X 'main.BuildDate=$(DATE)'" ./kser
 
+.PHONY: assets
+assets:
+	@bash ./make_assets.sh $(VERSION) $(COMMIT_ID) $(DATE)
+
 .PHONY: install-check
 install-check:
 	@go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
@@ -45,3 +49,4 @@ check:
 .PHONY: clean
 clean:
 	@rm -rf bin
+	@rm -rf assets

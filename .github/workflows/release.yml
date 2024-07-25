@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.22.5
+
+    - name: Make assets
+      run: make assets
+
+    - name: Create release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: true
+        files: |
+          assets/*.tar.gz
