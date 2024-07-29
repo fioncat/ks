@@ -54,3 +54,35 @@ func EnsureFile(path string) error {
 
 	return nil
 }
+
+// RemoveFileRecursively remove file and its parent directories if they are empty
+func RemoveFileRecursively(path string) error {
+	err := os.Remove(path)
+	if err != nil {
+		return err
+	}
+
+	dir := filepath.Dir(path)
+	for {
+		if dir == "/" || dir == "." {
+			break
+		}
+		ents, err := os.ReadDir(dir)
+		if err != nil {
+			return fmt.Errorf("read dir %q: %w", dir, err)
+		}
+
+		if len(ents) > 0 {
+			break
+		}
+
+		err = os.Remove(dir)
+		if err != nil {
+			return err
+		}
+
+		dir = filepath.Dir(dir)
+	}
+
+	return nil
+}
