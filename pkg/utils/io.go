@@ -56,7 +56,7 @@ func EnsureFile(path string) error {
 }
 
 // RemoveFileRecursively remove file and its parent directories if they are empty
-func RemoveFileRecursively(path string) error {
+func RemoveFileRecursively(path, endDir string) error {
 	err := os.Remove(path)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func RemoveFileRecursively(path string) error {
 
 	dir := filepath.Dir(path)
 	for {
-		if dir == "/" || dir == "." {
+		if dir == endDir || dir == "/" || dir == "." {
 			break
 		}
 		ents, err := os.ReadDir(dir)
