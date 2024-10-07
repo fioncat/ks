@@ -3,7 +3,7 @@ module github.com/fioncat/ks
 go 1.22.5
 
 require (
-	github.com/jedib0t/go-pretty/v6 v6.5.9
+	github.com/jedib0t/go-pretty/v6 v6.6.0
 	github.com/spf13/cobra v1.8.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.30.3
