@@ -108,7 +108,7 @@ func read(meta *metadata.Metadata, path string) (*KubeContext, error) {
 
 func remove(meta *metadata.Metadata, name string) error {
 	path := filepath.Join(meta.KubeConfigDir, name)
-	return os.Remove(path)
+	return utils.RemoveFileRecursively(path, meta.KubeConfigDir)
 }
 
 func getAlias(name string, target *KubeContext) *KubeContext {
